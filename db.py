@@ -1,3 +1,4 @@
+from datetime import date
 import sqlite3
 
 class Database:
@@ -11,9 +12,7 @@ class Database:
 
     def user_exists(self, user_id):
         with self.connection:
-            result = self.cursor.execute("SELECT * FROM `users` WHERE `user_id` = ?", (user_id,)).fetchall()
-            # print("➡ result EXISTS :", result)
-
+            result = self.cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchall()
             return bool(len(result))
 
     def set_nickname(self, user_id, nickname):
@@ -23,7 +22,7 @@ class Database:
     def get_signup(self, user_id):
         with self.connection:
             # result = self.cursor.execute("SELECT 'signup' FROM 'users' WHERE 'user_id' = ? ", (user_id,)) #.fetchall()
-            result = self.cursor.execute("SELECT `signup` FROM `users` WHERE `user_id` = ? ", (user_id,)).fetchall()
+            result = self.cursor.execute("SELECT `signup` FROM `users` WHERE user_id = ? ", (user_id,)).fetchall()
             # print("➡ result :", result)
             # result = self.cursor.execute("SELECT 'signup' FROM 'users'").fetchall()
 
@@ -44,5 +43,16 @@ class Database:
             for row in result:
                 nickname = str(row[0])
             return nickname
-        
-         
+    
+
+    def set_date_of_birth(self, user_id, date_of_birth):
+        with self.connection:
+            return self.cursor.execute("UPDATE `users` SET `date_of_birth` = ? WHERE `user_id` = ?", (date_of_birth, user_id,))
+
+
+    def get_date_of_birth(self, user_id):
+        with self.connection:
+            result = self.cursor.execute("SELECT `date_of_birth` FROM `users` WHERE `user_id` = ?", (user_id,)).fetchall()
+            for row in result:
+                date_of_birth = str(row[0])
+            return date_of_birth

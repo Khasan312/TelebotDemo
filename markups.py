@@ -1,7 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 btnProfile = KeyboardButton('👨Профиль')
-# btnSub = KeyboardButton('Информация')
+btnSub = KeyboardButton('💻Меню')
 
 mainMenu = ReplyKeyboardMarkup(resize_keyboard= True)
-mainMenu.add(btnProfile)
+mainMenu.add(btnProfile, btnSub)
