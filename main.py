@@ -50,6 +50,8 @@ async def start(message: types.Message):
 @dp.message_handler(state=Form.nickname)
 async def process_nickname(message: types.Message, state):
     await bot.send_message(message.from_user.id, "введи дату рождение ")
+    # if len(message.text) > 12:
+
 
     # save client's nickname to db
     db.set_nickname(message.from_user.id, message.text)
@@ -60,11 +62,11 @@ async def process_nickname(message: types.Message, state):
 async def process_birthday(message: types.Message, state):
     await bot.send_message(message.from_user.id, "введи свою позицию ")
 
-    keyboard = types.InlineKeyboardMarkup(row_width=2, text= 'hello')
+    keyboard = types.InlineKeyboardMarkup(row_width=2, text='hello')
     btn1 = types.InlineKeyboardButton('СТАЖЕР', callback_data="1")
     btn2 = types.InlineKeyboardButton('МЕНТОР',  callback_data="2")
     keyboard.add(btn1, btn2)
-    await bot.send_message(message.from_user.id, reply_markup=keyboard)
+    await bot.send_message(message.from_user.id, reply_markup=keyboard, text= 'hello')
 
     
 
@@ -96,8 +98,14 @@ async def process_position(message: types.Message, state):
     # save client's position to db
     # await Form.next()
 
-    
+    db.set_signup(message.from_user.id, "Готово")
+
     await bot.send_message(message.from_user.id, "Сделано")
+    await bot.send_message(
+                        message.from_user.id,
+                        "Регистрация прошла успешно",
+                        reply_markup=nav.mainMenu,
+                    )
 
     # await Form.next()
 
@@ -135,8 +143,8 @@ async def bot_message(message: types.Message):
                         message.from_user.id, "вы ввели запрещенный символ"
                     )
                 else:
-                    db.set_nickname(message.from_user.id, message.text)
-                    db.set_date_of_birth(message.from_user.id, message.text)
+                    # db.set_nickname(message.from_user.id, message.text)
+                    # db.set_date_of_birth(message.from_user.id, message.text)
                     db.set_signup(message.from_user.id, "Готово")
                     await bot.send_message(
                         message.from_user.id,

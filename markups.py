@@ -6,16 +6,16 @@ btnSub = KeyboardButton("💻Меню")
 
 
 mainMenu = InlineKeyboardMarkup(row_width=2)
-btnPosition = InlineKeyboardButton(text='Кнопка', callback_data='btnPosition')
+# btnPosition = InlineKeyboardButton(text='Кнопка', callback_data='btnPosition')
 
 
-mainMenu.insert(btnPosition)
+# mainMenu.insert(btnPosition)
 
 
 
 
 
 mainMenu = ReplyKeyboardMarkup(resize_keyboard=True)
-mainMenu.add(btnProfile, btnSub, btnPosition)
+mainMenu.add(btnProfile, btnSub)
 
 
