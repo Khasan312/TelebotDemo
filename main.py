@@ -3,7 +3,6 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import StatesGroup, State
 import markups as nav
-import random
 from markups import *
 from db import Database
 
@@ -62,10 +61,12 @@ async def process_nickname(message: types.Message, state):
 async def process_birthday(message: types.Message, state):
     await bot.send_message(message.from_user.id, "введи свою позицию ")
 
-    keyboard = types.InlineKeyboardMarkup(row_width=2, text='hello')
-    btn1 = types.InlineKeyboardButton('СТАЖЕР', callback_data="1")
-    btn2 = types.InlineKeyboardButton('МЕНТОР',  callback_data="2")
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    btn1 = types.KeyboardButton('СТАЖЕР')
+    btn2 = types.KeyboardButton('МЕНТОР')
     keyboard.add(btn1, btn2)
+
+    await Form.next()
     await bot.send_message(message.from_user.id, reply_markup=keyboard, text= 'hello')
 
     
@@ -75,7 +76,13 @@ async def process_birthday(message: types.Message, state):
     # save client's birthday to db
     db.set_date_of_birth(message.from_user.id, message.text)
 
-    await Form.next()
+
+@dp.callback_query_handler(lambda call: call.data =='btn1')
+async def choose(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+    print(callback_query)
+    # await db.add()
+    await bot.send_message(callback_query.from_user.id, 'fahfgwjahgfjawgw')
 
 
 
@@ -84,19 +91,9 @@ async def process_birthday(message: types.Message, state):
 
 @dp.message_handler(state=Form.position)
 async def process_position(message: types.Message, state):
-    # await bot.send_message(message.from_user.id, "What is your position?: ")
-    # await Form.next()
     db.set_position(message.from_user.id, message.text)
     await Form.next()
 
-
-# @dp.callback_query_handler(text='btnPosition')
-# async def position(message: types.Message):
-#     await bot.delete_message(message.from_user.id, message.message.message_id)
-#     await bot.send_message(message.from_user.id, "Я ЗДЕСЬ", reply_markup=nav.mainMenu)
-
-    # save client's position to db
-    # await Form.next()
 
     db.set_signup(message.from_user.id, "Готово")
 
@@ -108,11 +105,6 @@ async def process_position(message: types.Message, state):
                     )
 
     # await Form.next()
-
-
-# @dp.message_handler(comamnds='Buttons')
-# async def url_command(message: types.Message):
-#     await message.answer('Buttons', reply_markup=urlkb)
 
 
 
@@ -132,47 +124,29 @@ async def bot_message(message: types.Message):
             await bot.send_message(message.from_user.id, position)
 
         else:
-            if db.get_signup(message.from_user.id) == "setnickname":
-                if len(message.text) > 15:
-                    await bot.send_message(
-                        message.from_user.id,
-                        "никнэйм не должен превышать 15 символов и больше 2 символов",
-                    )
-                elif "@" in message.text or "/" in message.text:
-                    await bot.send_message(
-                        message.from_user.id, "вы ввели запрещенный символ"
-                    )
+                if db.get_signup(message.from_user.id) == "setnickname":
+                    if len(message.text) > 15:
+                        await bot.send_message(
+                            message.from_user.id,
+                            "никнэйм не должен превышать 15 символов и больше 2 символов",
+                        )
+                    elif "@" in message.text or "/" in message.text:
+                        await bot.send_message(
+                            message.from_user.id, "вы ввели запрещенный символ"
+                        )
+                    else:
+                        # db.set_nickname(message.from_user.id, message.text)
+                        # db.set_date_of_birth(message.from_user.id, message.text)
+                        db.set_signup(message.from_user.id, "Готово")
+                        await bot.send_message(
+                            message.from_user.id,
+                            "Регистрация прошла успешно",
+                            reply_markup=nav.mainMenu,
+                        )
                 else:
-                    # db.set_nickname(message.from_user.id, message.text)
-                    # db.set_date_of_birth(message.from_user.id, message.text)
-                    db.set_signup(message.from_user.id, "Готово")
-                    await bot.send_message(
-                        message.from_user.id,
-                        "Регистрация прошла успешно",
-                        reply_markup=nav.mainMenu,
-                    )
-            else:
-                await bot.send_message(message.from_user.id, "Что?")
+                    await bot.send_message(message.from_user.id, "Что?")
 
 
-# @dp.message_handler()
-# async def bot_message(message: types.Message):
-#     if message.chat.type == 'private':
-#         if message.text == 'Профиль':
-#             user_nickname = 'ваш ник: ' + db.get_nickname(message.from_user.id)
-#             await bot.send_message(message.from_user.id, user_nickname)
-
-#         else:
-#             if db.get_signup(message.from_user.id) == 'signup':
-#                 if(len(message.text) > 15):
-#                     await bot.send_message(message.from_user.id, 'никнэйм не должен превышать 15 символов')
-#                 elif '@' in  message.text or '/' in message.text:
-#                    await bot.send_message(message.from_user.id, 'вы ввели запрещенный символ')
-#                 else:
-#                     db.set_nickname(message.from_user.id, message.text)
-#                     await bot.send_message(message.from_user.id, 'Регистрация прошла успешно', reply_markup=nav.mainMenu)
-#             else:
-#                         await bot.send_message(message.from_user.id, 'Что?')
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)

@@ -36,12 +36,12 @@ class Database:
             result = self.cursor.execute(
                 "SELECT `signup` FROM `users` WHERE user_id = ? ", (user_id,)
             ).fetchall()
-            # print("➡ result :", result)
+            # print("➡️ result :", result)
             # result = self.cursor.execute("SELECT 'signup' FROM 'users'").fetchall()
 
             for row in result:
                 signup = str(row[0])
-            # print("➡ signup :", signup)
+            # print("➡️ signup :", signup)
             return signup
 
     def set_signup(self, user_id, signup):
@@ -60,7 +60,7 @@ class Database:
                 "SELECT `nickname` FROM `users` WHERE `user_id` = ?",
                 (user_id,),
             ).fetchall()
-            # print("➡ result :", result)
+            # print("➡️ result :", result)
             for row in result:
                 nickname = str(row[0])
             return nickname
@@ -94,6 +94,14 @@ class Database:
             for row in result:
                 position = str(row[0])
             return position
+
+    def __init__(self, db_file):
+        self.connection = sqlite3.connect(db_file)
+        self.cursor = self.connection.cursor()
+
+    def add(self, position, user_id):
+        self.cursor.execute("INSERT INTO users (position, user_id) VALUES (?, ?)", (position, user_id,))
+        self.connection.commit()
 
     def set_position(self, user_id, position):
         with self.connection:
